@@ -8,4 +8,11 @@
     <dimen name="fab_press_translation_z">6dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
 
+    <dimen name="layout_margin_horizontal">4dp</dimen>
+    <dimen name="layout_margin_vertical">4dp</dimen>
+
+    <dimen name="text_view_padding_horizontal">16dp</dimen>
+    <dimen name="text_view_padding_vertical">16dp</dimen>
+    <dimen name="text_view_small_padding_vertical">4dp</dimen>
+
 </resources>
