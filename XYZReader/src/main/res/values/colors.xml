@@ -23,5 +23,8 @@
     <color name="colorPrimaryText">#000000</color>
     <color name="colorSecondaryText">#ffffff</color>
 
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorGreyTransparent">#4d000000</color>
+
     <color name="photo_placeholder">#ffffff</color>
 </resources>
