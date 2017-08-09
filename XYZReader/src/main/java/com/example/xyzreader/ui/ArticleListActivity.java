@@ -190,12 +190,12 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public DynamicHeightNetworkImageView thumbnailView;
-        public TextView titleView;
-        public TextView subtitleView;
+    private static class ViewHolder extends RecyclerView.ViewHolder {
+        private DynamicHeightNetworkImageView thumbnailView;
+        private TextView titleView;
+        private TextView subtitleView;
 
-        public ViewHolder(View view) {
+        private ViewHolder(View view) {
             super(view);
             thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
             titleView = (TextView) view.findViewById(R.id.article_title);
