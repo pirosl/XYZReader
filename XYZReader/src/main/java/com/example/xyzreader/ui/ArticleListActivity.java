@@ -69,7 +69,10 @@ public class ArticleListActivity extends AppCompatActivity implements
         Assert.assertNotNull(mSwipeRefreshLayout);
         Assert.assertNotNull(mRecyclerView);
 
-        mCollapsingToolbarLayout.setTitle("Screen Title");
+        mCollapsingToolbarLayout.setTitle(getResources().getString(R.string.app_name));
+        mCollapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
+        mCollapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
+
         getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
@@ -181,12 +184,14 @@ public class ArticleListActivity extends AppCompatActivity implements
                                 publishedDate.getTime(),
                                 System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                                 DateUtils.FORMAT_ABBREV_ALL).toString()
-                                + "<br/>" + " by "
+                                + getResources().getString(R.string.break_line)
+                                + getResources().getString(R.string.by)
                                 + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             } else {
                 holder.subtitleView.setText(Html.fromHtml(
                         outputFormat.format(publishedDate)
-                        + "<br/>" + " by "
+                                + getResources().getString(R.string.break_line)
+                                + getResources().getString(R.string.by)
                         + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
             holder.thumbnailView.setImageUrl(
