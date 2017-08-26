@@ -9,8 +9,8 @@
 
     <string name="up">Up</string>
 
-    <string name="break_line" translateble="false"><br/></string>
-    <string name="by">by</string>
+    <string name="break_line"><Data><![CDATA[ <br/> ]]> </Data></string>
+    <string name="by">by\u0020</string>
 
     <string name="today_date_log">Passing today\'s date</string>
 </resources>
