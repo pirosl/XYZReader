@@ -70,8 +70,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         Assert.assertNotNull(mRecyclerView);
 
         mCollapsingToolbarLayout.setTitle(getResources().getString(R.string.app_name));
-        mCollapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
-        mCollapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
         getLoaderManager().initLoader(0, null, this);
 
