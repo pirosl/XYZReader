@@ -16,6 +16,8 @@ import static com.example.xyzreader.ui.ArticleDetailFragment.newInstance;
  */
 public class ArticleDetailActivity extends AppCompatActivity {
 
+    private static final String TAG = ArticleDetailActivity.class.getSimpleName();
+
     private long mStartId;
 
     private int mSelectedItemUpButtonFloor = Integer.MAX_VALUE;

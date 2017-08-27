@@ -30,6 +30,9 @@ import com.example.xyzreader.R;
 
 
 public class DrawInsetsFrameLayout extends FrameLayout {
+
+    private static final String TAG = DrawInsetsFrameLayout.class.getSimpleName();
+
     private Drawable mInsetBackground;
     private Drawable mTopInsetBackground;
     private Drawable mBottomInsetBackground;

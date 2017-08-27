@@ -25,6 +25,8 @@ import android.view.View;
 
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
+    private static final String TAG = DividerItemDecoration.class.getSimpleName();
+
     private static final int[] ATTRS = new int[]{
             android.R.attr.listDivider
     };
