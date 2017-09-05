@@ -84,7 +84,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            <TextView
+                android:id="@+id/toolbar_article_title"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="4"
+                android:paddingBottom="@dimen/text_view_small_padding_vertical"
+                android:paddingLeft="@dimen/text_view_padding_horizontal"
+                android:paddingRight="@dimen/text_view_padding_horizontal"
+                android:paddingTop="@dimen/text_view_padding_horizontal"
+                android:textColor="@color/colorSecondaryText" />
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
