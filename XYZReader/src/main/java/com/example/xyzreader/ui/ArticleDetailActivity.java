@@ -34,8 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static com.example.xyzreader.ui.ArticleDetailFragment.newInstance;
-
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
  */
