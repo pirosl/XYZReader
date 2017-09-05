@@ -15,4 +15,6 @@
     <dimen name="text_view_padding_vertical">16dp</dimen>
     <dimen name="text_view_small_padding_vertical">4dp</dimen>
 
+    <dimen name="spacing_medium">4dp</dimen>
+
 </resources>
