@@ -151,7 +151,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
                 bylineView.setText(Html.fromHtml(
-            //    mCollapsingToolbarLayout.setTitle(Html.fromHtml(mCursor.getString(ArticleLoader.Query.TITLE) + "<br/>" +
                         DateUtils.getRelativeTimeSpanString(
                                 publishedDate.getTime(),
                                 System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
@@ -163,14 +162,13 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             } else {
                 // If date is before 1902, just show the string
                 bylineView.setText(Html.fromHtml(
-               // mCollapsingToolbarLayout.setTitle(Html.fromHtml(mCursor.getString(ArticleLoader.Query.TITLE) + "<br/>" +
                         outputFormat.format(publishedDate) + " by <font color='#ffffff'>"
                                 + mCursor.getString(ArticleLoader.Query.AUTHOR)
                                 + "</font>"));
 
             }
 
-            bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
+            bodyView.setText(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(?<!(\r\n|\n))(\n\r|\n)(?!(\r\n|\n))", ""));
             ImageLoaderHelper.getInstance(this).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override

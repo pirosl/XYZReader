@@ -107,10 +107,9 @@
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scrollview"
+        style="@style/NestedScrollBarStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
@@ -119,6 +118,7 @@
 
             <TextView
                 android:id="@+id/article_body"
+                style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/detail_inner_horiz_margin"
