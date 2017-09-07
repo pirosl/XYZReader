@@ -6,14 +6,11 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
@@ -21,7 +18,6 @@ import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowInsets;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -147,8 +143,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         TextView bodyView = (TextView) findViewById(R.id.article_body);
 
 
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
-
         if (mCursor != null) {
             titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             toolbarTitleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
@@ -175,6 +169,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
                                 + "</font>"));
 
             }
+
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
             ImageLoaderHelper.getInstance(this).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
