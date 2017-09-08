@@ -47,22 +47,22 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="DetailTitle"  parent="@style/TextAppearance.AppCompat.Title">
-        <item name="android:textSize">@dimen/detail_title_text_size</item>
+    <style name="DetailTitle" parent="@style/TextAppearance.AppCompat.Title">
         <item name="android:textColor">@color/colorSecondaryText</item>
         <item name="android:textStyle">normal</item>
     </style>
+
     <style name="DetailSubtitle" parent="@style/TextAppearance.AppCompat.Title">
-        <item name="android:textSize">@dimen/detail_body_text_size</item>
+        <item name="android:textSize">@dimen/abc_text_size_title_material</item>
         <item name="android:textColor">@color/colorSecondaryText</item>
         <item name="android:textStyle">normal</item>
     </style>
+
     <style name="DetailBody">
         <item name="android:fontFamily">sans-serif-light</item>
-    <item name="android:textSize">@dimen/detail_body_text_size</item>
+        <item name="android:textSize">@dimen/abc_text_size_title_material</item>
         <item name="android:lineSpacingMultiplier">1.25</item>
-    <item name="android:textColor">@color/colorSecondaryText</item>
-    <item name="android:textStyle">normal</item>
-
+        <item name="android:textColor">@color/colorSecondaryText</item>
+        <item name="android:textStyle">normal</item>
     </style>
 </resources>

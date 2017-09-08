@@ -8,11 +8,11 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -46,8 +46,8 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private static final String TAG = ArticleListActivity.class.getSimpleName();
 
-    @BindView(R.id.collapsing_toolbar_layout)
-    CollapsingToolbarLayout mCollapsingToolbarLayout;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recycler_view)
@@ -65,12 +65,12 @@ public class ArticleListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_article_list);
 
         ButterKnife.bind(this);
-        Assert.assertNotNull(mCollapsingToolbarLayout);
+        //Assert.assertNotNull(mCollapsingToolbarLayout);
+        Assert.assertNotNull(mToolbar);
         Assert.assertNotNull(mSwipeRefreshLayout);
         Assert.assertNotNull(mRecyclerView);
 
-        mCollapsingToolbarLayout.setTitle(getResources().getString(R.string.app_name));
-
+        mToolbar.setTitle(getResources().getString(R.string.app_name));
         getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
