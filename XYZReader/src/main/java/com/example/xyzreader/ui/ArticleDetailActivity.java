@@ -28,10 +28,15 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 
+import junit.framework.Assert;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
@@ -51,22 +56,28 @@ public class ArticleDetailActivity extends AppCompatActivity implements
 
     private Cursor mCursor;
     private long mItemId;
-    private ImageView mPhotoView;
-    private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private AppBarLayout mAppBarLayout;
 
-    private TextView toolbarTitleView;
-    private TextView titleView;
-    private TextView bylineView;
+    @BindView(R.id.article_title)
+    TextView titleView;
+    @BindView(R.id.toolbar_article_title)
+    TextView toolbarTitleView;
+    @BindView(R.id.article_byline)
+    TextView bylineView;
+    @BindView(R.id.article_body)
+    TextView bodyView;
+    @BindView(R.id.photo)
+    ImageView mPhotoView;
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapsingToolbarLayout;
+    @BindView(R.id.app_bar_layout)
+    AppBarLayout mAppBarLayout;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
-
-
-
+    
     static float progress(float v, float min, float max) {
         return constrain((v - min) / (max - min), 0, 1);
     }
@@ -91,20 +102,24 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         }
         setContentView(R.layout.activity_article_detail);
 
+        ButterKnife.bind(this);
+        Assert.assertNotNull(titleView);
+        Assert.assertNotNull(toolbarTitleView);
+        Assert.assertNotNull(bylineView);
+        Assert.assertNotNull(bodyView);
+        Assert.assertNotNull(mPhotoView);
+        Assert.assertNotNull(mCollapsingToolbarLayout);
+        Assert.assertNotNull(mAppBarLayout);
+
+        bylineView.setMovementMethod(new LinkMovementMethod());
+        mAppBarLayout.addOnOffsetChangedListener(this);
+
         if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getData() != null) {
                 mItemId = ItemsContract.Items.getItemId(getIntent().getData());
             }
 
             getLoaderManager().initLoader(0, null, this);
-
-            mPhotoView = (ImageView)findViewById(R.id.photo);
-            mCollapsingToolbarLayout = (CollapsingToolbarLayout)findViewById(R.id.collapsing_toolbar);
-            mAppBarLayout = (AppBarLayout)findViewById(R.id.app_bar_layout);
-            mAppBarLayout.addOnOffsetChangedListener(this);
-            //mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-         //   mCollapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.colorSecondaryText));
-          //  mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorSecondaryText));
 
             final Activity activity = this;
             findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
@@ -116,9 +131,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements
                             .getIntent(), getString(R.string.action_share)));
                 }
             });
-
-            bindViews();
-
 
             startAlphaAnimation(toolbarTitleView, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
         }
@@ -136,12 +148,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements
     }
 
     private void bindViews() {
-        titleView = (TextView) findViewById(R.id.article_title);
-        toolbarTitleView = (TextView) findViewById(R.id.toolbar_article_title);
-        bylineView = (TextView) findViewById(R.id.article_byline);
-        bylineView.setMovementMethod(new LinkMovementMethod());
-        TextView bodyView = (TextView) findViewById(R.id.article_body);
-
 
         if (mCursor != null) {
             titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));

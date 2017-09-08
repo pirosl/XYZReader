@@ -65,7 +65,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_article_list);
 
         ButterKnife.bind(this);
-        //Assert.assertNotNull(mCollapsingToolbarLayout);
         Assert.assertNotNull(mToolbar);
         Assert.assertNotNull(mSwipeRefreshLayout);
         Assert.assertNotNull(mRecyclerView);
