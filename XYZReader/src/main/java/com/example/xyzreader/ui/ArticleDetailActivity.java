@@ -2,15 +2,18 @@ package com.example.xyzreader.ui;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
@@ -20,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -34,9 +38,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+//import static android.R.attr.author;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
@@ -44,15 +51,14 @@ import butterknife.ButterKnife;
 public class ArticleDetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, AppBarLayout.OnOffsetChangedListener {
 
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR  = 0.9f;
-    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS     = 0.9f;
-    private static final int ALPHA_ANIMATIONS_DURATION              = 200;
-    private boolean mIsTheTitleVisible          = false;
+    private static final String TAG = ArticleDetailActivity.class.getSimpleName();
+
+    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
+    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.9f;
+    private static final int ALPHA_ANIMATIONS_DURATION = 200;
+    private boolean mIsTheTitleVisible = false;
     private boolean mIsTheTitleContainerVisible = true;
 
-    public static final String ARG_ITEM_ID = "item_id";
-    private static final String TAG = ArticleDetailActivity.class.getSimpleName();
-    private static final float PARALLAX_FACTOR = 1.25f;
 
     private Cursor mCursor;
     private long mItemId;
@@ -63,8 +69,11 @@ public class ArticleDetailActivity extends AppCompatActivity implements
     TextView toolbarTitleView;
     @BindView(R.id.article_byline)
     TextView bylineView;
-    @BindView(R.id.article_body)
-    TextView bodyView;
+    // @BindView(R.id.article_body)
+    //TextView bodyView;
+   // @BindView(R.id.article_body)
+    //RecyclerView bodyView;
+
     @BindView(R.id.photo)
     ImageView mPhotoView;
     @BindView(R.id.collapsing_toolbar)
@@ -76,21 +85,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
-    
-    static float progress(float v, float min, float max) {
-        return constrain((v - min) / (max - min), 0, 1);
-    }
-
-    static float constrain(float val, float min, float max) {
-        if (val < min) {
-            return min;
-        } else if (val > max) {
-            return max;
-        } else {
-            return val;
-        }
-    }
+    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +101,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         Assert.assertNotNull(titleView);
         Assert.assertNotNull(toolbarTitleView);
         Assert.assertNotNull(bylineView);
-        Assert.assertNotNull(bodyView);
+      //  Assert.assertNotNull(bodyView);
         Assert.assertNotNull(mPhotoView);
         Assert.assertNotNull(mCollapsingToolbarLayout);
         Assert.assertNotNull(mAppBarLayout);
@@ -114,26 +109,28 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         bylineView.setMovementMethod(new LinkMovementMethod());
         mAppBarLayout.addOnOffsetChangedListener(this);
 
-        if (savedInstanceState == null) {
+         if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getData() != null) {
-                mItemId = ItemsContract.Items.getItemId(getIntent().getData());
-            }
+               mItemId = ItemsContract.Items.getItemId(getIntent().getData());
+          }
 
             getLoaderManager().initLoader(0, null, this);
 
-            final Activity activity = this;
-            findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(activity)
-                            .setType("text/plain")
-                            .setText("Some sample text")
-                            .getIntent(), getString(R.string.action_share)));
-                }
-            });
+         }
 
-            startAlphaAnimation(toolbarTitleView, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
-        }
+
+        final Activity activity = this;
+        findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(activity)
+                        .setType("text/plain")
+                        .setText("Some sample text")
+                        .getIntent(), getString(R.string.action_share)));
+            }
+        });
+
+        startAlphaAnimation(toolbarTitleView, 1/*ALPHA_ANIMATIONS_DURATION*/, View.INVISIBLE);
     }
 
     private Date parsePublishedDate() {
@@ -147,12 +144,21 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         }
     }
 
+    private Date parsePublishedDate(String date) {
+        try {
+            return dateFormat.parse(date);
+        } catch (ParseException ex) {
+            Log.e(TAG, ex.getMessage());
+            Log.i(TAG, "passing today's date");
+            return new Date();
+        }
+    }
+
     private void bindViews() {
 
         if (mCursor != null) {
             titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             toolbarTitleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
-            //mCollapsingToolbarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE) + "<br/>");
 
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
@@ -174,7 +180,34 @@ public class ArticleDetailActivity extends AppCompatActivity implements
 
             }
 
-            bodyView.setText(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(?<!(\r\n|\n))(\n\r|\n)(?!(\r\n|\n))", ""));
+            final LinearLayout body_content = (LinearLayout)findViewById(R.id.body_content);
+            final Context context = this;
+            String body = mCursor.getString(ArticleLoader.Query.BODY);
+            // StringTokenizer st = new StringTokenizer(body, "(?<!(\r\n|\n))(\n\r|\n)(?!(\r\n|\n))");
+            final StringTokenizer st = new StringTokenizer(body, "(\r\n|\n)(\n\r|\n)+");
+                final Handler handler = new Handler();
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        //   String body = mCursor.getString(ArticleLoader.Query.BODY);
+                        // StringTokenizer st = new StringTokenizer(body, "(?<!(\r\n|\n))(\n\r|\n)(?!(\r\n|\n))");
+                        // StringTokenizer st = new StringTokenizer(body, "(\r\n|\n)(\n\r|\n)+");
+                        int ii = 0;
+                        while (st.hasMoreTokens() && ii < 10) {
+                            TextView paragraph = new TextView(context, null, R.style.DetailBody);
+                            paragraph.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText));
+                            paragraph.setText(st.nextToken());
+                            body_content.addView(paragraph);
+                            // bodyView.append(st.nextToken());
+                            ++ii;
+                        }
+                        if(st.hasMoreTokens()) {
+                            handler.post(this);
+                        }
+                    }
+                };
+                //public void someOtherFunction() {
+                handler.post(runnable);
             ImageLoaderHelper.getInstance(this).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
@@ -192,11 +225,12 @@ public class ArticleDetailActivity extends AppCompatActivity implements
                         }
                     });
         } else {
-            titleView.setText("N/A");
-            bylineView.setText("N/A" );
-            bodyView.setText("N/A");
+            // titleView.setText("N/A");
+            //bylineView.setText("N/A" );
+            //  bodyView.setText("N/A");
         }
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -210,9 +244,12 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             Log.e(TAG, "Error reading item detail cursor");
             mCursor.close();
             mCursor = null;
-        }
+        } else {
 
-        bindViews();
+            bindViews();
+
+
+        }
     }
 
     @Override
@@ -220,6 +257,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         mCursor = null;
         bindViews();
     }
+
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
@@ -234,7 +272,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
     private void handleToolbarTitleVisibility(float percentage) {
         if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
 
-            if(!mIsTheTitleVisible) {
+            if (!mIsTheTitleVisible) {
                 startAlphaAnimation(toolbarTitleView, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mIsTheTitleVisible = true;
             }
@@ -251,7 +289,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
 
     private void handleAlphaOnTitle(float percentage) {
         if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
-            if(mIsTheTitleContainerVisible) {
+            if (mIsTheTitleContainerVisible) {
                 startAlphaAnimation(titleView, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 startAlphaAnimation(bylineView, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 mIsTheTitleContainerVisible = false;
@@ -267,7 +305,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         }
     }
 
-    public static void startAlphaAnimation (View v, long duration, int visibility) {
+    public static void startAlphaAnimation(View v, long duration, int visibility) {
         AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
                 ? new AlphaAnimation(0f, 1f)
                 : new AlphaAnimation(1f, 0f);
