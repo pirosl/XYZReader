@@ -38,10 +38,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.StringTokenizer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.xyzreader.R.id.body_content;
 
 //import static android.R.attr.author;
 
@@ -69,9 +70,9 @@ public class ArticleDetailActivity extends AppCompatActivity implements
     TextView toolbarTitleView;
     @BindView(R.id.article_byline)
     TextView bylineView;
+    @BindView(body_content)
+    LinearLayout bodyContent;
     // @BindView(R.id.article_body)
-    //TextView bodyView;
-   // @BindView(R.id.article_body)
     //RecyclerView bodyView;
 
     @BindView(R.id.photo)
@@ -101,7 +102,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         Assert.assertNotNull(titleView);
         Assert.assertNotNull(toolbarTitleView);
         Assert.assertNotNull(bylineView);
-      //  Assert.assertNotNull(bodyView);
+        Assert.assertNotNull(bodyContent);
         Assert.assertNotNull(mPhotoView);
         Assert.assertNotNull(mCollapsingToolbarLayout);
         Assert.assertNotNull(mAppBarLayout);
@@ -109,15 +110,14 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         bylineView.setMovementMethod(new LinkMovementMethod());
         mAppBarLayout.addOnOffsetChangedListener(this);
 
-         if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getData() != null) {
-               mItemId = ItemsContract.Items.getItemId(getIntent().getData());
-          }
+                mItemId = ItemsContract.Items.getItemId(getIntent().getData());
+            }
 
             getLoaderManager().initLoader(0, null, this);
 
-         }
-
+        }
 
         final Activity activity = this;
         findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
@@ -154,6 +154,8 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         }
     }
 
+    int paragraphTmp = 0;
+
     private void bindViews() {
 
         if (mCursor != null) {
@@ -180,34 +182,36 @@ public class ArticleDetailActivity extends AppCompatActivity implements
 
             }
 
-            final LinearLayout body_content = (LinearLayout)findViewById(R.id.body_content);
             final Context context = this;
             String body = mCursor.getString(ArticleLoader.Query.BODY);
-            // StringTokenizer st = new StringTokenizer(body, "(?<!(\r\n|\n))(\n\r|\n)(?!(\r\n|\n))");
-            final StringTokenizer st = new StringTokenizer(body, "(\r\n|\n)(\n\r|\n)+");
-                final Handler handler = new Handler();
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        //   String body = mCursor.getString(ArticleLoader.Query.BODY);
-                        // StringTokenizer st = new StringTokenizer(body, "(?<!(\r\n|\n))(\n\r|\n)(?!(\r\n|\n))");
-                        // StringTokenizer st = new StringTokenizer(body, "(\r\n|\n)(\n\r|\n)+");
-                        int ii = 0;
-                        while (st.hasMoreTokens() && ii < 10) {
-                            TextView paragraph = new TextView(context, null, R.style.DetailBody);
-                            paragraph.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText));
-                            paragraph.setText(st.nextToken());
-                            body_content.addView(paragraph);
-                            // bodyView.append(st.nextToken());
-                            ++ii;
-                        }
-                        if(st.hasMoreTokens()) {
-                            handler.post(this);
-                        }
+            final String[] m = body.split("(\n{1,}[\r]?){2,}");
+            final int paragraphNo = m.length;
+            paragraphTmp = 0;
+            final Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    int ii = 0;
+                    while (paragraphTmp < paragraphNo && ii < 3) {
+                        TextView paragraph = new TextView(context, null, R.style.DetailBody);
+                        paragraph.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText));
+                        String text = m[paragraphTmp];
+                        text = text.replaceAll("[\r]?\n[\r]?", " ");
+                        paragraph.setText(text);
+                        bodyContent.addView(paragraph);
+                        ++ii;
+                        ++paragraphTmp;
+                        TextView emptyLine = new TextView(context, null, R.style.DetailBody);
+                        emptyLine.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText));
+                        emptyLine.setText(" ");
+                        bodyContent.addView(emptyLine);
                     }
-                };
-                //public void someOtherFunction() {
-                handler.post(runnable);
+                    if (paragraphTmp < paragraphNo) {
+                        handler.post(this);
+                    }
+                }
+            };
+            handler.post(runnable);
             ImageLoaderHelper.getInstance(this).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
                         @Override
@@ -225,9 +229,13 @@ public class ArticleDetailActivity extends AppCompatActivity implements
                         }
                     });
         } else {
-            // titleView.setText("N/A");
-            //bylineView.setText("N/A" );
-            //  bodyView.setText("N/A");
+            titleView.setText("Error");
+            bylineView.setText("Error" );
+            TextView emptyLine = new TextView(this, null, R.style.DetailBody);
+            emptyLine.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryText));
+            emptyLine.setText(" ");
+            bodyContent.addView(emptyLine);
+
         }
     }
 
