@@ -30,7 +30,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
-import com.example.xyzreader.data.ItemsContract;
 
 import junit.framework.Assert;
 
@@ -111,9 +110,12 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         mAppBarLayout.addOnOffsetChangedListener(this);
 
         if (savedInstanceState == null) {
-            if (getIntent() != null && getIntent().getData() != null) {
-                mItemId = ItemsContract.Items.getItemId(getIntent().getData());
-            }
+            //if (getIntent() != null && getIntent().getData() != null) {
+             //   mItemId = ItemsContract.Items.getItemId(getIntent().getData());
+            //}
+            Bundle bundle = getIntent().getExtras();
+
+            mItemId = bundle.getLong("_id");
 
             getLoaderManager().initLoader(0, null, this);
 
