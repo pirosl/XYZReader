@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,19 +14,15 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 
@@ -40,10 +35,6 @@ import java.util.GregorianCalendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.example.xyzreader.R.id.body_content;
-
-//import static android.R.attr.author;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
@@ -69,13 +60,11 @@ public class ArticleDetailActivity extends AppCompatActivity implements
     TextView toolbarTitleView;
     @BindView(R.id.article_byline)
     TextView bylineView;
-    @BindView(body_content)
+    @BindView(R.id.body_content)
     LinearLayout bodyContent;
-    // @BindView(R.id.article_body)
-    //RecyclerView bodyView;
 
     @BindView(R.id.photo)
-    ImageView mPhotoView;
+    DynamicHeightNetworkImageView mPhotoView;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.app_bar_layout)
@@ -106,19 +95,20 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         Assert.assertNotNull(mCollapsingToolbarLayout);
         Assert.assertNotNull(mAppBarLayout);
 
+        // supportPostponeEnterTransition();
+
         bylineView.setMovementMethod(new LinkMovementMethod());
         mAppBarLayout.addOnOffsetChangedListener(this);
 
         if (savedInstanceState == null) {
             //if (getIntent() != null && getIntent().getData() != null) {
-             //   mItemId = ItemsContract.Items.getItemId(getIntent().getData());
+            //   mItemId = ItemsContract.Items.getItemId(getIntent().getData());
             //}
             Bundle bundle = getIntent().getExtras();
 
             mItemId = bundle.getLong("_id");
 
             getLoaderManager().initLoader(0, null, this);
-
         }
 
         final Activity activity = this;
@@ -214,25 +204,16 @@ public class ArticleDetailActivity extends AppCompatActivity implements
                 }
             };
             handler.post(runnable);
-            ImageLoaderHelper.getInstance(this).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
-                        @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                                Palette p = Palette.generate(bitmap, 12);
-                                mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                            }
-                        }
 
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
+            mPhotoView.setImageUrl(
+                    mCursor.getString(ArticleLoader.Query.PHOTO_URL),
+                    ImageLoaderHelper.getInstance(ArticleDetailActivity.this).getImageLoader());
+            mPhotoView.setAspectRatio(1);// / mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
-                        }
-                    });
+
         } else {
             titleView.setText("Error");
-            bylineView.setText("Error" );
+            bylineView.setText("Error");
             TextView emptyLine = new TextView(this, null, R.style.DetailBody);
             emptyLine.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryText));
             emptyLine.setText(" ");
@@ -255,10 +236,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             mCursor.close();
             mCursor = null;
         } else {
-
             bindViews();
-
-
         }
     }
 
