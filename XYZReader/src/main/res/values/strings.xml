@@ -11,11 +11,17 @@
 
     <string name="break_line"><Data><![CDATA[ <br/> ]]> </Data></string>
     <string name="by">by\u0020</string>
+    <string name="paddedby">\u0020by\u0020</string>
+    <string name="font_tag" translatable="false"><Data><![CDATA[ <font color=\'#ffffff\'> ]]> </Data></string>
+    <string name="closing_font_tag" translatable="false"><Data><![CDATA[ </font> ]]> </Data></string>
 
-    <string name="today_date_log">Passing today\'s date</string>
-    <string name="error">Error</string>
+    <string name="today_date_log" translatable="false">Passing today\'s date</string>
+    <string name="cursor_read_error" translatable="false">Error reading item detail cursor</string>
+    <string name="error" translatable="false">Error</string>
 
     <string name="transition_photo" translatable="false">transitionphoto</string>
     <string name="transition_title" translatable="false">transitiontitle</string>
     <string name="transition_subtitle" translatable="false">transitionsubtitle</string>
+
+    <string name="record_id" translatable="false">recordid</string>
 </resources>

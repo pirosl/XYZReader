@@ -154,7 +154,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ArticleDetailActivity.class);
-                    intent.putExtra("_id", getItemId(vh.getAdapterPosition()));
+                    intent.putExtra(getResources().getString(R.string.record_id), getItemId(vh.getAdapterPosition()));
 
 
                     ActivityOptionsCompat options = ActivityOptionsCompat.
@@ -162,11 +162,8 @@ public class ArticleListActivity extends AppCompatActivity implements
                                     Pair.create((View)vh.thumbnailView,ViewCompat.getTransitionName(vh.thumbnailView)),
                                     Pair.create((View)vh.titleView,ViewCompat.getTransitionName(vh.titleView)),
                                     Pair.create((View)vh.subtitleView,ViewCompat.getTransitionName(vh.subtitleView)));
-                 //   Bundle bundle = options.toBundle();
-                   // bundle.putLong("_id", getItemId(vh.getAdapterPosition()));
                     startActivity(intent, options.toBundle());
-                   // startActivity(new Intent(Intent.ACTION_VIEW,
-                    //        ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+
                 }
             });
             return vh;
@@ -178,7 +175,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                 return dateFormat.parse(date);
             } catch (ParseException ex) {
                 Log.e(TAG, ex.getMessage());
-                Log.i(TAG, "passing today's date");
+                Log.i(TAG, getResources().getString(R.string.today_date_log));
                 return new Date();
             }
         }

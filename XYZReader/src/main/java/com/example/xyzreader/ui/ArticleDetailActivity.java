@@ -103,12 +103,9 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         mAppBarLayout.addOnOffsetChangedListener(this);
 
         if (savedInstanceState == null) {
-            //if (getIntent() != null && getIntent().getData() != null) {
-            //   mItemId = ItemsContract.Items.getItemId(getIntent().getData());
-            //}
             Bundle bundle = getIntent().getExtras();
 
-            mItemId = bundle.getLong("_id");
+            mItemId = bundle.getLong(getResources().getString(R.string.record_id));
 
             getLoaderManager().initLoader(0, null, this);
         }
@@ -132,7 +129,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
             return dateFormat.parse(date);
         } catch (ParseException ex) {
-            Log.i(TAG, "Passing today's date");
+            Log.i(TAG, getResources().getString(R.string.today_date_log));
             Log.e(TAG, ex.getMessage());
             return new Date();
         }
@@ -151,16 +148,19 @@ public class ArticleDetailActivity extends AppCompatActivity implements
                                 publishedDate.getTime(),
                                 System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                                 DateUtils.FORMAT_ABBREV_ALL).toString()
-                                + " by <font color='#ffffff'>"
+                                + getResources().getString(R.string.paddedby)
+                                + getResources().getString(R.string.font_tag)
                                 + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
+                                + getResources().getString(R.string.closing_font_tag)));
 
             } else {
                 // If date is before 1902, just show the string
                 bylineView.setText(Html.fromHtml(
-                        outputFormat.format(publishedDate) + " by <font color='#ffffff'>"
+                        outputFormat.format(publishedDate)
+                                + getResources().getString(R.string.paddedby)
+                                + getResources().getString(R.string.font_tag)
                                 + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
+                                + getResources().getString(R.string.closing_font_tag)));
 
             }
 
@@ -225,7 +225,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         mCursor = cursor;
         if (mCursor != null && !mCursor.moveToFirst()) {
-            Log.e(TAG, "Error reading item detail cursor");
+            Log.e(TAG, getResources().getString(R.string.cursor_read_error));
             mCursor.close();
             mCursor = null;
         } else {
@@ -238,7 +238,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         mCursor = null;
         bindViews();
     }
-
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
@@ -264,7 +263,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             }
         }
     }
-
 
     private void handleAlphaOnTitle(float percentage) {
         if (percentage >= PERCENTAGE_TO_SWITCH_TITLES) {
