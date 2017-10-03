@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -154,10 +155,13 @@ public class ArticleListActivity extends AppCompatActivity implements
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ArticleDetailActivity.class);
                     intent.putExtra("_id", getItemId(vh.getAdapterPosition()));
+
+
                     ActivityOptionsCompat options = ActivityOptionsCompat.
                             makeSceneTransitionAnimation(ArticleListActivity.this,
-                                    vh.thumbnailView,
-                                    ViewCompat.getTransitionName(vh.thumbnailView));
+                                    Pair.create((View)vh.thumbnailView,ViewCompat.getTransitionName(vh.thumbnailView)),
+                                    Pair.create((View)vh.titleView,ViewCompat.getTransitionName(vh.titleView)),
+                                    Pair.create((View)vh.subtitleView,ViewCompat.getTransitionName(vh.subtitleView)));
                  //   Bundle bundle = options.toBundle();
                    // bundle.putLong("_id", getItemId(vh.getAdapterPosition()));
                     startActivity(intent, options.toBundle());

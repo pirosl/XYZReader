@@ -44,15 +44,16 @@ public class ArticleDetailActivity extends AppCompatActivity implements
 
     private static final String TAG = ArticleDetailActivity.class.getSimpleName();
 
-    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
-    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.9f;
+    private static final float PERCENTAGE_TO_SWITCH_TITLES = 0.9f;
+    private static final int MAX_PARGRAPHS_LOADED_PER_HANDLER = 3;
     private static final int ALPHA_ANIMATIONS_DURATION = 200;
+    private static final int SHORT_ALPHA_ANIMATIONS_DURATION = 1;
     private boolean mIsTheTitleVisible = false;
     private boolean mIsTheTitleContainerVisible = true;
 
-
     private Cursor mCursor;
     private long mItemId;
+    private int paragraphTmp;
 
     @BindView(R.id.article_title)
     TextView titleView;
@@ -95,7 +96,8 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         Assert.assertNotNull(mCollapsingToolbarLayout);
         Assert.assertNotNull(mAppBarLayout);
 
-        // supportPostponeEnterTransition();
+        // initialise the paragraphTmp with 0
+        paragraphTmp = 0;
 
         bylineView.setMovementMethod(new LinkMovementMethod());
         mAppBarLayout.addOnOffsetChangedListener(this);
@@ -117,12 +119,12 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(activity)
                         .setType("text/plain")
-                        .setText("Some sample text")
+                        .setText(titleView.getText() + " - " + bylineView.getText())
                         .getIntent(), getString(R.string.action_share)));
             }
         });
 
-        startAlphaAnimation(toolbarTitleView, 1/*ALPHA_ANIMATIONS_DURATION*/, View.INVISIBLE);
+        startAlphaAnimation(toolbarTitleView, SHORT_ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
     }
 
     private Date parsePublishedDate() {
@@ -130,23 +132,11 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
             return dateFormat.parse(date);
         } catch (ParseException ex) {
+            Log.i(TAG, "Passing today's date");
             Log.e(TAG, ex.getMessage());
-            Log.i(TAG, "passing today's date");
             return new Date();
         }
     }
-
-    private Date parsePublishedDate(String date) {
-        try {
-            return dateFormat.parse(date);
-        } catch (ParseException ex) {
-            Log.e(TAG, ex.getMessage());
-            Log.i(TAG, "passing today's date");
-            return new Date();
-        }
-    }
-
-    int paragraphTmp = 0;
 
     private void bindViews() {
 
@@ -174,46 +164,17 @@ public class ArticleDetailActivity extends AppCompatActivity implements
 
             }
 
-            final Context context = this;
-            String body = mCursor.getString(ArticleLoader.Query.BODY);
-            final String[] m = body.split("(\n{1,}[\r]?){2,}");
-            final int paragraphNo = m.length;
-            paragraphTmp = 0;
-            final Handler handler = new Handler();
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    int ii = 0;
-                    while (paragraphTmp < paragraphNo && ii < 3) {
-                        TextView paragraph = new TextView(context, null, R.style.DetailBody);
-                        paragraph.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText));
-                        String text = m[paragraphTmp];
-                        text = text.replaceAll("[\r]?\n[\r]?", " ");
-                        paragraph.setText(text);
-                        bodyContent.addView(paragraph);
-                        ++ii;
-                        ++paragraphTmp;
-                        TextView emptyLine = new TextView(context, null, R.style.DetailBody);
-                        emptyLine.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText));
-                        emptyLine.setText(" ");
-                        bodyContent.addView(emptyLine);
-                    }
-                    if (paragraphTmp < paragraphNo) {
-                        handler.post(this);
-                    }
-                }
-            };
-            handler.post(runnable);
+            fillContent();
 
             mPhotoView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.PHOTO_URL),
                     ImageLoaderHelper.getInstance(ArticleDetailActivity.this).getImageLoader());
-            mPhotoView.setAspectRatio(1);// / mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+            mPhotoView.setAspectRatio(1);
 
 
         } else {
-            titleView.setText("Error");
-            bylineView.setText("Error");
+            titleView.setText(getResources().getString(R.string.error));
+            bylineView.setText(getResources().getString(R.string.error));
             TextView emptyLine = new TextView(this, null, R.style.DetailBody);
             emptyLine.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryText));
             emptyLine.setText(" ");
@@ -222,6 +183,38 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         }
     }
 
+    private void fillContent() {
+        final Context context = this;
+        String body = mCursor.getString(ArticleLoader.Query.BODY);
+        final String[] m = body.split("(\n{1,}[\r]?){2,}");
+        final int paragraphNo = m.length;
+        paragraphTmp = 0;
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                int ii = 0;
+                while (paragraphTmp < paragraphNo && ii < MAX_PARGRAPHS_LOADED_PER_HANDLER) {
+                    TextView paragraph = new TextView(context, null, R.style.DetailBody);
+                    paragraph.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText));
+                    String text = m[paragraphTmp];
+                    text = text.replaceAll("[\r]?\n[\r]?", " ");
+                    paragraph.setText(text);
+                    bodyContent.addView(paragraph);
+                    ++ii;
+                    ++paragraphTmp;
+                    TextView emptyLine = new TextView(context, null, R.style.DetailBody);
+                    emptyLine.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText));
+                    emptyLine.setText(" ");
+                    bodyContent.addView(emptyLine);
+                }
+                if (paragraphTmp < paragraphNo) {
+                    handler.post(this);
+                }
+            }
+        };
+        handler.post(runnable);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -258,15 +251,13 @@ public class ArticleDetailActivity extends AppCompatActivity implements
 
 
     private void handleToolbarTitleVisibility(float percentage) {
-        if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
+        if (percentage >= PERCENTAGE_TO_SWITCH_TITLES) {
 
             if (!mIsTheTitleVisible) {
                 startAlphaAnimation(toolbarTitleView, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mIsTheTitleVisible = true;
             }
-
         } else {
-
             if (mIsTheTitleVisible) {
                 startAlphaAnimation(toolbarTitleView, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 mIsTheTitleVisible = false;
@@ -276,15 +267,13 @@ public class ArticleDetailActivity extends AppCompatActivity implements
 
 
     private void handleAlphaOnTitle(float percentage) {
-        if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
+        if (percentage >= PERCENTAGE_TO_SWITCH_TITLES) {
             if (mIsTheTitleContainerVisible) {
                 startAlphaAnimation(titleView, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 startAlphaAnimation(bylineView, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 mIsTheTitleContainerVisible = false;
             }
-
         } else {
-
             if (!mIsTheTitleContainerVisible) {
                 startAlphaAnimation(titleView, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 startAlphaAnimation(bylineView, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);

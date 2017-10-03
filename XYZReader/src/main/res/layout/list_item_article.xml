@@ -48,6 +48,7 @@
                 android:paddingLeft="@dimen/text_view_padding_horizontal"
                 android:paddingRight="@dimen/text_view_padding_horizontal"
                 android:paddingTop="@dimen/text_view_padding_horizontal"
+                android:transitionName="@string/transition_title"
                 android:textColor="@color/colorSecondaryText" />
 
             <TextView
@@ -60,6 +61,7 @@
                 android:paddingBottom="@dimen/text_view_padding_vertical"
                 android:paddingLeft="@dimen/text_view_padding_horizontal"
                 android:paddingRight="@dimen/text_view_padding_horizontal"
+                android:transitionName="@string/transition_subtitle"
                 android:textColor="@color/colorSecondaryText" />
         </LinearLayout>
     </FrameLayout>

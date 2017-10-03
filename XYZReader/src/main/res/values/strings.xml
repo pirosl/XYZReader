@@ -13,6 +13,9 @@
     <string name="by">by\u0020</string>
 
     <string name="today_date_log">Passing today\'s date</string>
+    <string name="error">Error</string>
 
     <string name="transition_photo" translatable="false">transitionphoto</string>
+    <string name="transition_title" translatable="false">transitiontitle</string>
+    <string name="transition_subtitle" translatable="false">transitionsubtitle</string>
 </resources>
