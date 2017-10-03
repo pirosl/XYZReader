@@ -106,13 +106,11 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         bylineView.setMovementMethod(new LinkMovementMethod());
         mAppBarLayout.addOnOffsetChangedListener(this);
 
-        if (savedInstanceState == null) {
-            Bundle bundle = getIntent().getExtras();
+        Bundle bundle = getIntent().getExtras();
 
-            mItemId = bundle.getLong(getResources().getString(R.string.record_id));
+        mItemId = bundle.getLong(getResources().getString(R.string.record_id));
 
-            getLoaderManager().initLoader(0, null, this);
-        }
+        getLoaderManager().initLoader(0, null, this);
 
         final Activity activity = this;
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
