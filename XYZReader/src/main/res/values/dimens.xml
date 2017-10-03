@@ -4,7 +4,7 @@
     <dimen name="detail_body_text_size">20sp</dimen>
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
 
-    <dimen name="fab_elevation">2dp</dimen>
+    <dimen name="fab_elevation">4dp</dimen>
     <dimen name="fab_press_translation_z">6dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
 
@@ -14,6 +14,7 @@
     <dimen name="text_view_padding_horizontal">16dp</dimen>
     <dimen name="text_view_padding_vertical">16dp</dimen>
     <dimen name="text_view_small_padding_vertical">4dp</dimen>
+    <dimen name="text_view_large_padding_vertical">32dp</dimen>
 
     <dimen name="spacing_medium">4dp</dimen>
 

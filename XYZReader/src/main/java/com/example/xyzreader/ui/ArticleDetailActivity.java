@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -70,6 +71,8 @@ public class ArticleDetailActivity extends AppCompatActivity implements
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.app_bar_layout)
     AppBarLayout mAppBarLayout;
+    @BindView(R.id.share_fab)
+    FloatingActionButton mFloatingActionButton;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -95,6 +98,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         Assert.assertNotNull(mPhotoView);
         Assert.assertNotNull(mCollapsingToolbarLayout);
         Assert.assertNotNull(mAppBarLayout);
+        Assert.assertNotNull(mFloatingActionButton);
 
         // initialise the paragraphTmp with 0
         paragraphTmp = 0;
@@ -111,7 +115,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements
         }
 
         final Activity activity = this;
-        findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(activity)
