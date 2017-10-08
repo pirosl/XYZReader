@@ -44,7 +44,7 @@ import butterknife.ButterKnife;
  * activity presents a grid of items as cards.
  */
 public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = ArticleListActivity.class.getSimpleName();
 
@@ -74,6 +74,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         mToolbar.setTitle(getResources().getString(R.string.app_name));
         getLoaderManager().initLoader(0, null, this);
 
+        mSwipeRefreshLayout.setOnRefreshListener(this);
         if (savedInstanceState == null) {
             refresh();
         }
@@ -126,11 +127,20 @@ public class ArticleListActivity extends AppCompatActivity implements
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(sglm);
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mRecyclerView.setAdapter(null);
+    }
+
+    @Override
+    public void onRefresh() {
+        if(!mIsRefreshing) {
+            mIsRefreshing = true;
+            refresh();
+        }
     }
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
@@ -155,7 +165,6 @@ public class ArticleListActivity extends AppCompatActivity implements
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ArticleDetailActivity.class);
                     intent.putExtra(getResources().getString(R.string.record_id), getItemId(vh.getAdapterPosition()));
-
 
                     ActivityOptionsCompat options = ActivityOptionsCompat.
                             makeSceneTransitionAnimation(ArticleListActivity.this,
