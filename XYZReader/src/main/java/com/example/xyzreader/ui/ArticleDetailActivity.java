@@ -19,7 +19,10 @@ import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -171,7 +174,19 @@ public class ArticleDetailActivity extends AppCompatActivity implements
             mPhotoView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.PHOTO_URL),
                     ImageLoaderHelper.getInstance(ArticleDetailActivity.this).getImageLoader());
-            mPhotoView.setAspectRatio(1);
+            Display display = ((WindowManager) getSystemService(WINDOW_SERVICE))
+                    .getDefaultDisplay();
+
+            int orientation = display.getRotation();
+
+            if (orientation == Surface.ROTATION_90
+                    || orientation == Surface.ROTATION_270) {
+                mPhotoView.setAspectRatio(1f/2.5f);
+            }
+            else {
+                mPhotoView.setAspectRatio(1f);
+            }
+
 
 
         } else {
